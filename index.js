@@ -21,9 +21,9 @@ const init = async () => {
     server.auth.strategy('jwt', 'jwt', {
         key: process.env.JWT_SECRET_KEY,
         validate: validateJWT(),
-        verifyOptions: {
-            ignoreExpiration: true,    // Enables/Accept Expired Tokens
-        }
+        // verifyOptions: {
+        //     ignoreExpiration: true,    // Enables/Accept Expired Tokens
+        // }
     });
 
     server.route(routes)

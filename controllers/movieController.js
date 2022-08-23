@@ -59,8 +59,8 @@ const deleteMovie = async (req, h) => {
 const createUser = async (req, h) => {
     try {
         let { name, email, password, confirmPassword } = req.payload;
-        if (password !== confirmPassword) {
-            return h.response({ error: "Password & Confirm Password are not Matched!!" }).code(400);
+        if (!confirmPassword) {
+            return h.response({ error: "Confirm Password must be required" }).code(400);
         } else {
             const user = await db.get().collection('users').findOne({ email });
             if (user) return h.response({ error: "User Already Exist!!" }).code(400);
@@ -79,9 +79,11 @@ const loginUser = async (req, h) => {
         const { email, password } = req.payload;
         const user = await db.get().collection('users').findOne({ email });
         if (!user) return h.response({ error: "User not Registered!!" }).code(400);
-        const token = await Jwt.sign({ _id: user._id }, process.env.JWT_SECRET_KEY, { expiresIn: '6s' });
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) return h.response({ error: "Invalid Credentials!!" }).code(400);
+        const token = await Jwt.sign({ _id: user._id }, process.env.JWT_SECRET_KEY, { expiresIn: '30s' });
         await db.get().collection('users').updateOne({ _id: user._id }, { $set: { token: token } });
-        return h.response({ success: "User Login Successfully!!" }).code(200);
+        return h.response({ success: "User Login Successfully!!", token }).code(200);
     } catch (error) {
         console.log(error.message);
         return h.response({ error: error.message }).code(400);

@@ -7,7 +7,7 @@ const validateJWT = () => {
         const _id = new ObjectId(decode._id);
         const user = await db.get().collection('users').findOne({ _id });
         if (!user) return { isValid: false };
-        return { isValid: true };
+        return { isValid: true, credentials: user };
     }    
 }
 
@@ -16,7 +16,7 @@ const validateBasic =  () => {
         const user = await db.get().collection('users').findOne({ email: username });
         if (!user) return { credentials: null, isValid: false };
         const isValid = await bcrypt.compare(password, user.password);
-        return { isValid, credentials: user };
+        return { isValid };
     };
 }
 

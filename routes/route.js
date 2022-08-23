@@ -103,7 +103,7 @@ const routes = [
                     name: Joi.string().required(),
                     email: Joi.string().required().email(),
                     password: Joi.string().required(),
-                    confirmPassword: Joi.string().required()
+                    confirmPassword: Joi.ref('password')
                 }),
                 failAction: (request, h, error) => {
                     return h.response({ message: error.details[0].message.replace(/['"]+/g, '') }).code(400).takeover();
