@@ -116,9 +116,6 @@ const routes = [
         path: '/login',
         handler: movieController.loginUser,
         options: {
-            auth: {
-                strategy: 'simple'
-            },
             validate: {
                 payload: Joi.object({
                     email: Joi.string().required().email(),
@@ -132,11 +129,16 @@ const routes = [
     },
     {
         method: 'GET',
+        path: '/logout',
+        handler: movieController.logoutUser
+    },
+    {
+        method: 'GET',
         path: '/about',
         handler: movieController.aboutPage,
         options: {
             auth: {
-                strategy: 'jwt',
+                strategy: 'simple',
             }
         }
     }

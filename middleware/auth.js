@@ -14,9 +14,9 @@ const validateJWT = () => {
 const validateBasic =  () => {
     return async (req, username, password, h) => {
         const user = await db.get().collection('users').findOne({ email: username });
-        if (!user) return { credentials: null, isValid: false };
+        if (!user) return { isValid: false };
         const isValid = await bcrypt.compare(password, user.password);
-        return { isValid };
+        return { isValid , credentials: user};
     };
 }
 

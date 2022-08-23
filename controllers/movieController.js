@@ -2,6 +2,7 @@ const db = require('../config/db');
 const { ObjectId } = require('mongodb');
 const bcrypt = require('bcrypt');
 const Jwt = require('jsonwebtoken');
+const Boom = require('@hapi/boom');
 
 const createMovie = async (req, h) => {
     try {
@@ -90,9 +91,19 @@ const loginUser = async (req, h) => {
     }
 }
 
-const aboutPage = async (req, h) => {
+const logoutUser = async (req, h) => {
     try {
-        return h.response("Welcome to the About page!!");
+        return Boom.unauthorized("You are Successfully logged out!!");
+    } catch (error) {
+        console.log(error.message);
+        return h.response({ error: error.message }).code(400);
+    }
+}
+
+const aboutPage = async ({ auth }, req, h) => {
+    try {
+        console.log("Hello ", auth.credentials.name);
+        return { success: `Hello ${auth.credentials.name}` };
     } catch (error) {
         console.log(error.message);
         return h.response({ error: error.message }).code(400);
@@ -107,5 +118,6 @@ module.exports = {
     deleteMovie,
     createUser,
     loginUser,
+    logoutUser,
     aboutPage
 }
