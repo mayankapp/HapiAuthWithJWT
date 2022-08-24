@@ -34,6 +34,20 @@ const getOneMovie = async (req, h) => {
     }
 }
 
+const searchMovie = async (req, h) => {
+    try {
+        const { movieName, generic } = req.query;
+        let condition = [];
+        if (movieName) condition.push({ $match: { name: movieName } });
+        if (generic) condition.push({ $match: { generic: generic } });
+        const data = await db.get().collection("movies").aggregate(condition).toArray();
+        return h.response({ success: true, data }).code(200);
+    } catch (error) {
+        console.log(error.message);
+        return h.response({ error: error.message }).code(400);
+    }
+}
+
 const updateMovie = async (req, h) => {
     try {
         const _id = new ObjectId(req.params.id);
@@ -82,7 +96,7 @@ const loginUser = async (req, h) => {
         if (!user) return h.response({ error: "User not Registered!!" }).code(400);
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) return h.response({ error: "Invalid Credentials!!" }).code(400);
-        const token = await Jwt.sign({ _id: user._id }, process.env.JWT_SECRET_KEY, { expiresIn: '30s' });
+        const token = await Jwt.sign({ _id: user._id }, process.env.JWT_SECRET_KEY, { expiresIn: '1d' });
         await db.get().collection('users').updateOne({ _id: user._id }, { $set: { token: token } });
         return h.response({ success: "User Login Successfully!!", token }).code(200);
     } catch (error) {
@@ -114,6 +128,7 @@ module.exports = {
     createMovie,
     getAllMovie,
     getOneMovie,
+    searchMovie,
     updateMovie,
     deleteMovie,
     createUser,

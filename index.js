@@ -1,6 +1,9 @@
 "use strict"
 const Hapi = require('@hapi/hapi');
 require('dotenv').config();
+const HapiSwagger = require('hapi-swagger');
+const Inert = require('@hapi/inert');
+const Vision = require('@hapi/vision');
 
 // Database configuration
 const db = require('./config/db');
@@ -25,6 +28,34 @@ const init = async () => {
         //     ignoreExpiration: true,    // Enables/Accept Expired Tokens
         // }
     });
+
+    const swaggerOptions = {
+        info: {
+            title: 'Swagger of Hapi js APIs',
+            version: '1.0.0'
+        },
+        basePath: '/',
+        securityDefinitions: {
+            jwt: {
+              type: 'apiKey',
+              name: 'Authorization',
+              in: 'header'
+            },
+            simple: {
+                type: 'basic'
+            }
+        },
+        security: [{ jwt: [] , simple: []}]
+    }
+
+    await server.register([
+        Inert,
+        Vision,
+        {
+            plugin: HapiSwagger,
+            options: swaggerOptions
+        }
+    ])
 
     server.route(routes)
     await db.dbConnect();

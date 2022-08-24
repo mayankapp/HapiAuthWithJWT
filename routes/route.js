@@ -3,10 +3,24 @@ const movieController = require("../controllers/movieController");
 
 const routes = [
     {
+        method: 'GET',
+        path: '/movie',
+        handler: movieController.getAllMovie,
+        options: {
+            description: "Get all Movies",
+            tags: ['api'],
+            auth: {
+                strategy: 'jwt',
+            }
+        }
+    },
+    {
         method: 'POST',
-        path: '/createMovie',
+        path: '/movie/create',
         handler: movieController.createMovie,
         options: {
+            description: "Create a Movie",
+            tags: ['api'],
             auth: {
                 strategy: 'jwt'
             },
@@ -25,19 +39,11 @@ const routes = [
     },
     {
         method: 'GET',
-        path: '/',
-        handler: movieController.getAllMovie,
-        options: {
-            auth: {
-                strategy: 'jwt',
-            }
-        }
-    },
-    {
-        method: 'GET',
-        path: '/{id}',
+        path: '/movie/{id}',
         handler: movieController.getOneMovie,
         options: {
+            description: "Get One Movies",
+            tags: ['api'],
             auth: {
                 strategy: 'jwt'
             },
@@ -52,10 +58,34 @@ const routes = [
         }
     },
     {
+        method: 'GET',
+        path: '/movie/search',
+        handler: movieController.searchMovie,
+        options: {
+            description: "Search Movie",
+            notes: "Enter Movie Name",
+            tags: ['api'],
+            auth: {
+                strategy: 'jwt'
+            },
+            validate: {
+                query: Joi.object({
+                    movieName: Joi.string(),
+                    generic: Joi.string()
+                }),
+                failAction: (request, h, error) => {
+                    return h.response({ message: error.details[0].message.replace(/['"]+/g, '') }).code(400).takeover();
+                }
+            }
+        }
+    },
+    {
         method: 'PATCH',
-        path: '/updateMovie/{id}',
+        path: '/movie/update/{id}',
         handler: movieController.updateMovie,
         options: {
+            description: "Update a Movie",
+            tags: ['api'],
             auth: {
                 strategy: 'jwt'
             },
@@ -77,9 +107,11 @@ const routes = [
     },
     {
         method: 'DELETE',
-        path: '/deleteMovie/{id}',
+        path: '/movie/delete/{id}',
         handler: movieController.deleteMovie,
         options: {
+            description: "Delete a Movie",
+            tags: ['api'],
             auth: {
                 strategy: 'jwt'
             },
@@ -95,9 +127,11 @@ const routes = [
     },
     {
         method: 'POST',
-        path: "/register",
+        path: "/user/register",
         handler: movieController.createUser,
         options: {
+            description: "Register a User",
+            tags: ['api','user'],
             validate: {
                 payload: Joi.object({
                     name: Joi.string().required(),
@@ -113,9 +147,11 @@ const routes = [
     },
     {
         method: 'POST', 
-        path: '/login',
+        path: '/user/login',
         handler: movieController.loginUser,
         options: {
+            description: "Login a User",
+            tags: ['api','user'],
             validate: {
                 payload: Joi.object({
                     email: Joi.string().required().email(),
@@ -129,14 +165,20 @@ const routes = [
     },
     {
         method: 'GET',
-        path: '/logout',
-        handler: movieController.logoutUser
+        path: '/user/logout',
+        handler: movieController.logoutUser,
+        options: {
+            description: "Logout a User",
+            tags: ['api','user'],
+        }
     },
     {
         method: 'GET',
         path: '/about',
         handler: movieController.aboutPage,
         options: {
+            description: "About Page",
+            tags: ['api'],
             auth: {
                 strategy: 'simple',
             }
