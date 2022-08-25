@@ -34,7 +34,6 @@ const init = async () => {
             title: 'Swagger of Hapi js APIs',
             version: '1.0.0'
         },
-        basePath: '/',
         securityDefinitions: {
             jwt: {
               type: 'apiKey',
@@ -55,8 +54,7 @@ const init = async () => {
             plugin: HapiSwagger,
             options: swaggerOptions
         }
-    ])
-
+    ]);
     server.route(routes)
     await db.dbConnect();
     await server.start();

@@ -1,6 +1,6 @@
 const db = require('../config/db');
 const { ObjectId } = require('mongodb');
-const bcrypt = require('bcrypt');
+const Bcrypt = require('bcrypt');
 const Jwt = require('jsonwebtoken');
 const Boom = require('@hapi/boom');
 
@@ -16,7 +16,7 @@ const createMovie = async (req, h) => {
 
 const getAllMovie = async (req, h) => {
     try {
-        return await db.get().collection("movies").find({}).toArray();
+        return await db.get().collection("movies").find({}).sort({ name: 1}).toArray();
     } catch (error) {
         console.log(error.message);
         return h.response({ error: error.message }).code(400);
@@ -79,7 +79,7 @@ const createUser = async (req, h) => {
         } else {
             const user = await db.get().collection('users').findOne({ email });
             if (user) return h.response({ error: "User Already Exist!!" }).code(400);
-            password = await bcrypt.hash(password, 10); 
+            password = await Bcrypt.hash(password, 10); 
             await db.get().collection('users').insertOne({ name, email, password });
             return h.response({ success: "User Created Successfully!!"}).code(400)
         }
@@ -94,10 +94,11 @@ const loginUser = async (req, h) => {
         const { email, password } = req.payload;
         const user = await db.get().collection('users').findOne({ email });
         if (!user) return h.response({ error: "User not Registered!!" }).code(400);
-        const isMatch = await bcrypt.compare(password, user.password);
+        const isMatch = await Bcrypt.compare(password, user.password);
         if (!isMatch) return h.response({ error: "Invalid Credentials!!" }).code(400);
         const token = await Jwt.sign({ _id: user._id }, process.env.JWT_SECRET_KEY, { expiresIn: '1d' });
         await db.get().collection('users').updateOne({ _id: user._id }, { $set: { token: token } });
+        
         return h.response({ success: "User Login Successfully!!", token }).code(200);
     } catch (error) {
         console.log(error.message);

@@ -63,7 +63,7 @@ const routes = [
         handler: movieController.searchMovie,
         options: {
             description: "Search Movie",
-            notes: "Enter Movie Name",
+            notes: "Search your Movie",
             tags: ['api'],
             auth: {
                 strategy: 'jwt'
@@ -91,10 +91,10 @@ const routes = [
             },
             validate: {
                 payload: Joi.object({
-                    name: Joi.string().required(),
-                    actorName:Joi.string().required(),
-                    actressName:Joi.string().required(),
-                    generic:Joi.string().required()
+                    name: Joi.string(),
+                    actorName:Joi.string(),
+                    actressName:Joi.string(),
+                    generic:Joi.string()
                 }),
                 params: Joi.object({
                     id: Joi.string().required()
